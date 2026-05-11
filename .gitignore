@@ -36,6 +36,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# IDE / editor — configurações locais de máquina
+.vscode/
+.idea/
+
+# Claude Code — permissões e configurações locais (contém caminhos pessoais)
+.claude/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
