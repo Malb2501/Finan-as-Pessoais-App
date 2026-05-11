@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Transaction, TransactionFilters, Category } from '@/types'
 import { CATEGORIES } from '@/lib/categories'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -26,6 +26,11 @@ const MONTHS = [
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ]
 
+function parseLocalDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split('T')[0].split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 export default function TransactionsClient({ transactions: initialTransactions, userId }: TransactionsClientProps) {
   const [transactions, setTransactions] = useState(initialTransactions)
   const [filters, setFilters] = useState<TransactionFilters>({
@@ -38,9 +43,13 @@ export default function TransactionsClient({ transactions: initialTransactions, 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const supabase = createClient()
 
+  useEffect(() => {
+    setTransactions(initialTransactions)
+  }, [initialTransactions])
+
   const filtered = useMemo(() => {
     return transactions.filter(t => {
-      const date = new Date(t.date)
+      const date = parseLocalDate(t.date)
       if (filters.month && date.getMonth() + 1 !== filters.month) return false
       if (filters.year && date.getFullYear() !== filters.year) return false
       if (filters.category && filters.category !== 'all' && t.category !== filters.category) return false
@@ -109,7 +118,7 @@ export default function TransactionsClient({ transactions: initialTransactions, 
               onValueChange={v => setFilters(f => ({ ...f, month: Number(v) }))}
             >
               <SelectTrigger className="w-36">
-                <SelectValue />
+                <span className="flex flex-1 text-left">{filters.month ? MONTHS[filters.month - 1] : ''}</span>
               </SelectTrigger>
               <SelectContent>
                 {MONTHS.map((m, i) => (
@@ -123,7 +132,7 @@ export default function TransactionsClient({ transactions: initialTransactions, 
               onValueChange={v => setFilters(f => ({ ...f, year: Number(v) }))}
             >
               <SelectTrigger className="w-28">
-                <SelectValue />
+                <span className="flex flex-1 text-left">{filters.year}</span>
               </SelectTrigger>
               <SelectContent>
                 {years.map(y => (
@@ -137,7 +146,9 @@ export default function TransactionsClient({ transactions: initialTransactions, 
               onValueChange={v => setFilters(f => ({ ...f, category: v as Category | 'all' }))}
             >
               <SelectTrigger className="w-44">
-                <SelectValue />
+                <span className="flex flex-1 text-left">
+                  {filters.category === 'all' ? 'Todos' : filters.category}
+                </span>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as categorias</SelectItem>
@@ -173,7 +184,7 @@ export default function TransactionsClient({ transactions: initialTransactions, 
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">{t.category}</Badge>
                         <span className="text-xs text-gray-500">
-                          {format(new Date(t.date), 'dd/MM/yyyy')}
+                          {format(parseLocalDate(t.date), 'dd/MM/yyyy')}
                         </span>
                       </div>
                     </div>

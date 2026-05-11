@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { toast } from 'sonner'
 import { Wallet } from 'lucide-react'
 
@@ -34,11 +35,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 mb-8">
           <Wallet className="h-8 w-8 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">FinançasPessoais</h1>
+          <h1 className="text-2xl font-bold text-foreground">FinançasPessoais</h1>
         </div>
         <Card>
           <CardHeader>
@@ -74,7 +78,7 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Entrando...' : 'Entrar'}
               </Button>
-              <p className="text-sm text-gray-600 text-center">
+              <p className="text-sm text-muted-foreground text-center">
                 Não tem conta?{' '}
                 <Link href="/register" className="text-blue-600 hover:underline">
                   Criar conta

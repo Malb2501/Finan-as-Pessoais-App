@@ -10,6 +10,11 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
+function parseLocalDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split('T')[0].split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 interface DashboardClientProps {
   transactions: Transaction[]
 }
@@ -134,7 +139,7 @@ export default function DashboardClient({ transactions }: DashboardClientProps) 
                 <div key={t.id} className="flex items-center justify-between py-2 border-b last:border-0">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{t.description}</p>
-                    <p className="text-xs text-gray-500">{t.category} · {format(new Date(t.date), 'dd/MM/yyyy')}</p>
+                    <p className="text-xs text-gray-500">{t.category} · {format(parseLocalDate(t.date), 'dd/MM/yyyy')}</p>
                   </div>
                   <span className={`text-sm font-semibold ${t.type === 'receita' ? 'text-green-600' : 'text-red-600'}`}>
                     {t.type === 'receita' ? '+' : '-'}{formatCurrency(t.amount)}

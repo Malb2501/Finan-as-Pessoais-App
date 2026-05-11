@@ -23,17 +23,24 @@ interface TransactionDialogProps {
   transaction: Transaction | null
   userId: string
   onSaved: (transaction: Transaction, isEdit: boolean) => void
+  defaultType?: TransactionType
+}
+
+function todayLocalISO() {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
 const defaultForm = {
   description: '',
   amount: '',
-  date: new Date().toISOString().split('T')[0],
+  date: todayLocalISO(),
   type: 'despesa' as TransactionType,
   category: 'Outros' as Category,
 }
 
-export default function TransactionDialog({ open, onOpenChange, transaction, userId, onSaved }: TransactionDialogProps) {
+export default function TransactionDialog({ open, onOpenChange, transaction, userId, onSaved, defaultType }: TransactionDialogProps) {
   const [form, setForm] = useState(defaultForm)
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
@@ -49,9 +56,9 @@ export default function TransactionDialog({ open, onOpenChange, transaction, use
         category: transaction.category,
       })
     } else {
-      setForm(defaultForm)
+      setForm({ ...defaultForm, date: todayLocalISO(), type: defaultType ?? 'despesa' })
     }
-  }, [transaction, open])
+  }, [transaction, open, defaultType])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
